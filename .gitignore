@@ -1,5 +1,5 @@
 .env
 downloaded_documents
 archive
-_pycache_
+__pycache__
 logs
