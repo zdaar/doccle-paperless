@@ -1,0 +1,11 @@
+version: "3"
+services:
+  doccle-service:
+    build: .
+    environment:
+      - DOCCLE_USERNAME=your_doccle_username
+      - DOCCLE_PASSWORD=your_doccle_password
+      - PAPERLESS_URL=http://your_paperless_url
+      - PAPERLESS_TOKEN=your_paperless_token
+    volumes:
+      - ./downloaded_documents:/app/downloaded_documents
