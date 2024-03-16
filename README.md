@@ -4,13 +4,20 @@ This project provides an integration between Doccle and Paperless, allowing you 
 
 ## Features
 
-- Automatically checks for new documents in Doccle
-- Downloads new documents as PDF files
-- Generates friendly filenames for downloaded documents
+- Automatically checks for new documents in Doccle at regular intervals
+- Downloads new documents as PDF files with friendly filenames
 - Saves document metadata as JSON files
 - Uploads downloaded documents to Paperless
 - Archives documents in Doccle after successful upload to Paperless
-- Comprehensive logging for easy monitoring and troubleshooting
+- Provides a health check endpoint for monitoring the application's status
+- Supports running the application locally or using Docker
+
+## TODO
+
+- [ ] Assign owner, tags, correspondents, and document types from Doccle's metadata
+- [ ] Better scheduling
+- [ ] Better logging
+- [ ] Better status API
 
 ## Prerequisites
 
@@ -19,89 +26,49 @@ This project provides an integration between Doccle and Paperless, allowing you 
 - Doccle account with valid credentials
 - Paperless instance with API access
 
-## Installation
+## Installation and Configuration
 
-1. Clone the repository:
+1. Clone the repository and navigate to the project directory.
 
-   ```
-   git clone https://github.com/your-username/doccle-to-paperless.git
-   cd doccle-to-paperless
-   ```
+2. For local usage, create a `.env` file based on the provided `.env.sample` file and fill in the required Doccle and Paperless credentials.
 
-2. Install the required dependencies:
-
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. Configuration:
-
-   - For local usage:
-
-     - Create a `.env` file in the project root by copying the `.env.sample` file.
-     - Provide the necessary configuration in the `.env` file:
-
-       ```
-       DOCCLE_USERNAME=your_doccle_username
-       DOCCLE_PASSWORD=your_doccle_password
-       PAPERLESS_URL=http://your_paperless_url
-       PAPERLESS_TOKEN=your_paperless_token
-       ```
-
-     - Replace the placeholders with your actual Doccle and Paperless credentials.
-
-   - For Docker usage:
-
-     - Open the `docker-compose.yaml` file.
-     - Provide the necessary configuration in the `environment` section of the `doccle-to-paperless-service`:
-
-       ```yaml
-       environment:
-         - DOCCLE_USERNAME=your_doccle_username
-         - DOCCLE_PASSWORD=your_doccle_password
-         - PAPERLESS_URL=http://your_paperless_url
-         - PAPERLESS_TOKEN=your_paperless_token
-       ```
-
-     - Replace the placeholders with your actual Doccle and Paperless credentials.
+3. For Docker usage, update the `docker-compose.yaml` file with the necessary Doccle and Paperless credentials in the `environment` section.
 
 ## Usage
 
 ### Running Locally
 
-To run the application locally, make sure you have populated the `.env` file with the necessary credentials. Then, execute the following command:
+1. Install the required dependencies:
 
-```
-python main.py
-```
+   ```
+   pip install -r requirements.txt
+   ```
 
-The application will check for new documents in Doccle, download them, and upload them to Paperless.
+2. Run the application:
+   ```
+   python main.py
+   ```
 
 ### Running with Docker
 
-To run the application using Docker, make sure you have provided the necessary credentials in the `docker-compose.yaml` file. Then, execute the following command:
+1. Build the Docker image and start the container:
+   ```
+   docker-compose up
+   ```
 
-```
-docker-compose up
-```
-
-This will build the Docker image and start a container running the application.
+The application will periodically check for new documents in Doccle, download them, and upload them to Paperless.
 
 ## Logging
 
-The application generates detailed logs for monitoring and troubleshooting purposes. Logs are stored in the `logs` directory with timestamped filenames. Each log entry includes the timestamp, log level, and message.
+Detailed logs are generated in the `logs` directory with timestamped filenames. Each log entry includes the timestamp, log level, and message, covering events such as document downloads, uploads, and errors.
 
-The following events are logged:
+## Monitoring
 
-- Successful download of a PDF document from Doccle
-- Saving of document metadata as a JSON file
-- Successful upload of a document to Paperless
-- Archiving of a document in Doccle
-- Errors related to missing credentials, failed downloads, invalid PDFs, and upload failures
+The application provides a health check endpoint at `/health` that returns the current status and uptime of the application.
 
 ## Contributing
 
-Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ## License
 
@@ -111,4 +78,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 - Steve Gilissen, author of [py-doccle](https://github.com/sgilissen/py-doccle)
 - [Doccle](https://www.doccle.be/) for providing the document management platform
-- [Paperless-NGX](https://github.com/jonaswinkler/paperless-ngx) for the community supported open-source document management system
+- [Paperless-NGX](https://github.com/jonaswinkler/paperless-ngx) for the community-supported open-source document management system

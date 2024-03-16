@@ -1,11 +1,39 @@
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from lib.doccle import Connector
 import json
 from pathvalidate import sanitize_filename
 from lib.post_to_paperless import post_to_paperless
+from flask import Flask, jsonify
+import threading
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
+
+app = Flask(__name__)
+
+# Record the start time of the application
+start_time = time.time()
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    uptime_seconds = time.time() - start_time
+    return jsonify(
+        {
+            "status": "UP",
+            "uptime": str(timedelta(seconds=int(uptime_seconds))),
+        }
+    )
+
+
+print("Starting Flask application...")
+
+
+def run_app():
+    app.run(host="0.0.0.0", port=5000)
+
 
 # Configure logging
 logs_directory = "logs"
@@ -16,10 +44,12 @@ log_file = os.path.join(logs_directory, f"doccle_paperless_{timestamp}.log")
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler(log_file), logging.StreamHandler()]
+    handlers=[logging.FileHandler(log_file), logging.StreamHandler()],
 )
 
 logger = logging.getLogger(__name__)
+
+print("Application initialized, setting up environment...")
 
 
 def is_valid_pdf(content):
@@ -48,10 +78,14 @@ docs = Connector(doccle_username, doccle_password)
 
 # Main logic
 
+print("Starting main application loop...")
+
 
 def main():
     # Fetch all new documents and prepare the download directory
-    new_documents = docs.get_documents(only_new=True, max_docs=1)
+    new_documents = docs.get_documents(
+        only_new=True
+    )  # You can add a max_docs parameter to limit the number of documents to download
     download_directory = "downloaded_documents"
     os.makedirs(download_directory, exist_ok=True)
 
@@ -61,16 +95,14 @@ def main():
 
             if document_content and is_valid_pdf(document_content):
                 friendly_filename = generate_friendly_filename(doc)
-                pdf_file_path = os.path.join(
-                    download_directory, friendly_filename)
+                pdf_file_path = os.path.join(download_directory, friendly_filename)
 
                 with open(pdf_file_path, "wb") as pdf_file:
                     pdf_file.write(document_content)
                 logger.info(f"Downloaded PDF: {friendly_filename}")
 
                 json_file_name = friendly_filename.rsplit(".", 1)[0] + ".json"
-                json_file_path = os.path.join(
-                    download_directory, json_file_name)
+                json_file_path = os.path.join(download_directory, json_file_name)
 
                 with open(json_file_path, "w", encoding="utf-8") as json_file:
                     json.dump(doc, json_file, ensure_ascii=False, indent=4)
@@ -78,11 +110,11 @@ def main():
 
                 try:
                     post_to_paperless(pdf_file_path)
-                    logger.info(
-                        f"Document posted to Paperless: {friendly_filename}")
+                    logger.info(f"Document posted to Paperless: {friendly_filename}")
                 except Exception as e:
                     logger.error(
-                        f"Failed to post document to Paperless: {friendly_filename}. Error: {str(e)}")
+                        f"Failed to post document to Paperless: {friendly_filename}. Error: {str(e)}"
+                    )
 
                 # Optionally archive the document if necessary
                 docs.archive_document(doc)
@@ -90,17 +122,27 @@ def main():
 
             else:
                 logger.error(
-                    f"Failed to download or invalid PDF: {doc.get('name', 'Unknown document')}")
+                    f"Failed to download or invalid PDF: {doc.get('name', 'Unknown document')}"
+                )
 
     else:
         logger.info("No new documents to download.")
 
 
 if __name__ == "__main__":
+
+    threading.Thread(target=run_app, daemon=True).start()
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(main, "interval", seconds=os.getenv("FETCH_INTERVAL", 3600))
+    scheduler.start()
+
+    # Start the main function in a background thread
+    threading.Thread(target=main, daemon=True).start()
+
     try:
-        main()
-    finally:
-        # Check if the log file is empty and remove it if so
-        if os.path.exists(log_file) and os.path.getsize(log_file) == 0:
-            os.remove(log_file)
-            logger.info(f"Removed empty logfile: {log_file}")
+        # Keep the main thread alive with a sleep loop
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Application shutdown requested via KeyboardInterrupt.")

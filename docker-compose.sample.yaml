@@ -1,7 +1,8 @@
 version: "3"
 services:
   doccle-paperless-service:
-    build: .
+    image: ghcr.io/zdaar/doccle-paperless:latest
+    container_name: doccle-paperless-service
     environment:
       - DOCCLE_USERNAME=your_doccle_username
       - DOCCLE_PASSWORD=your_doccle_password
@@ -9,3 +10,6 @@ services:
       - PAPERLESS_TOKEN=your_paperless_token
     volumes:
       - ./downloaded_documents:/app/downloaded_documents
+      - ./logs:/app/logs
+    ports:
+      - "5000:5000"

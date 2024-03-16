@@ -2,3 +2,5 @@ py-doccle
 python-dotenv
 pathvalidate
 requests
+Flask>=2.0
+apscheduler
