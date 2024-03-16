@@ -35,7 +35,9 @@ This project provides an integration between Doccle and Paperless, allowing you 
    ```
 
 3. Configuration:
+
    - For local usage:
+
      - Create a `.env` file in the project root by copying the `.env.sample` file.
      - Provide the necessary configuration in the `.env` file:
 
@@ -49,6 +51,7 @@ This project provides an integration between Doccle and Paperless, allowing you 
      - Replace the placeholders with your actual Doccle and Paperless credentials.
 
    - For Docker usage:
+
      - Open the `docker-compose.yaml` file.
      - Provide the necessary configuration in the `environment` section of the `doccle-to-paperless-service`:
 
@@ -106,6 +109,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgements
 
+- Steve Gilissen, author of [py-doccle](https://github.com/sgilissen/py-doccle)
 - [Doccle](https://www.doccle.be/) for providing the document management platform
-- [Paperless](https://github.com/jonaswinkler/paperless-ng) for the open-source document management system
-- [Python](https://www.python.org/) for the programming language and ecosystem
+- [Paperless-NGX](https://github.com/jonaswinkler/paperless-ngx) for the community supported open-source document management system
