@@ -3,3 +3,4 @@ downloaded_documents
 archive
 __pycache__
 logs
+docker-compose.yaml
