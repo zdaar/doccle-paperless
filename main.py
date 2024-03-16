@@ -134,7 +134,9 @@ if __name__ == "__main__":
     threading.Thread(target=run_app, daemon=True).start()
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(main, "interval", seconds=os.getenv("FETCH_INTERVAL", 3600))
+    scheduler.add_job(
+        main, "interval", seconds=int(os.getenv("FETCH_INTERVAL", "3600"))
+    )
     scheduler.start()
 
     # Start the main function in a background thread

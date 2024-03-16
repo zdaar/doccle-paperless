@@ -1,4 +1,3 @@
-py-doccle
 python-dotenv
 pathvalidate
 requests
