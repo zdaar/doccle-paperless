@@ -15,6 +15,7 @@ This project provides an integration between Doccle and Paperless, allowing you 
 ## TODO
 
 - [ ] Assign owner, tags, correspondents, and document types from Doccle's metadata
+- [ ] Add push notifications
 - [ ] Better scheduling
 - [ ] Better logging
 - [ ] Better status API
