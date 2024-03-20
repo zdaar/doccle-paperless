@@ -84,7 +84,7 @@ print("Starting main application loop...")
 def main():
     # Fetch all new documents and prepare the download directory
     new_documents = docs.get_documents(
-        only_new=False, max_docs=1
+        only_new=True,
     )  # You can add a max_docs parameter to limit the number of documents to download
     download_directory = "downloaded_documents"
     os.makedirs(download_directory, exist_ok=True)
