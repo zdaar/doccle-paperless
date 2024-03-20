@@ -84,7 +84,7 @@ print("Starting main application loop...")
 def main():
     # Fetch all new documents and prepare the download directory
     new_documents = docs.get_documents(
-        only_new=True
+        only_new=False, max_docs=1
     )  # You can add a max_docs parameter to limit the number of documents to download
     download_directory = "downloaded_documents"
     os.makedirs(download_directory, exist_ok=True)
@@ -130,6 +130,10 @@ def main():
 
 
 if __name__ == "__main__":
+
+    load_dotenv()
+    print("DOCCLE_USERNAME:", os.getenv("DOCCLE_USERNAME"))
+    print("DOCCLE_PASSWORD:", os.getenv("DOCCLE_PASSWORD"))
 
     threading.Thread(target=run_app, daemon=True).start()
 
