@@ -63,6 +63,86 @@ The application will periodically check for new documents in Doccle, download th
 
 Detailed logs are generated in the `logs` directory with timestamped filenames. Each log entry includes the timestamp, log level, and message, covering events such as document downloads, uploads, and errors.
 
+---
+
+# Doccle to Paperless Integration
+
+This project provides an integration between Doccle and Paperless, allowing you to automatically download new documents from Doccle and upload them to Paperless for easy organization and management.
+
+## Features
+
+- Automatically checks for new documents in Doccle at regular intervals
+- Downloads new documents as PDF files with friendly filenames
+- Saves document metadata as JSON files
+- Uploads downloaded documents to Paperless
+- Archives documents in Doccle after successful upload to Paperless
+- Provides a health check endpoint for monitoring the application's status
+- Supports running the application locally or using Docker
+
+## TODO
+
+- [ ] Assign owner, tags, correspondents, and document types from Doccle's metadata
+- [ ] Add push notifications
+- [ ] Better scheduling
+- [ ] Better logging
+- [ ] Better status API
+
+## Prerequisites
+
+- Python 3.9 or later
+- Docker and Docker Compose (optional, for running the application in a container)
+- Doccle account with valid credentials
+- Paperless instance with API access
+
+## Installation and Configuration
+
+1. Clone the repository and navigate to the project directory.
+
+2. For local usage, create a `.env` file based on the provided `.env.sample` file and fill in the required Doccle and Paperless credentials.
+
+3. For Docker usage, update the `docker-compose.yaml` file with the necessary Doccle and Paperless credentials in the `environment` section.
+
+## Usage
+
+### Running Locally
+
+1. Install the required dependencies:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+2. Run the application:
+   ```
+   python main.py
+   ```
+
+### Running with Docker
+
+1. Build the Docker image and start the container:
+   ```
+   docker-compose up
+   ```
+
+The application will periodically check for new documents in Doccle, download them, and upload them to Paperless.
+
+### Manual Document Import
+
+In case some documents fail to import automatically, you can manually retry importing all downloaded documents from the `downloaded_documents` folder:
+
+1. Ensure your `.env` file includes `PAPERLESS_URL` and `PAPERLESS_TOKEN`.
+
+2. Run the manual import script:
+   ```
+   python import_downloaded.py
+   ```
+
+**Note**: Depending on your Paperless instance settings, you may receive an OK response from the Paperless API, but the document might not import successfully if it already exists in Paperless. In such cases, check the Paperless application for any in-app error messages.
+
+## Logging
+
+Detailed logs are generated in the `logs` directory with timestamped filenames. Each log entry includes the timestamp, log level, and message, covering events such as document downloads, uploads, and errors.
+
 ## Monitoring
 
 The application provides a health check endpoint at `/health` that returns the current status and uptime of the application.
